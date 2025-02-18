@@ -57,7 +57,31 @@ const createJob = async (req, res) => {
 // get all jobs
 const getAllJobs = async (req, res) => {
     try {
-        const Jobs = await JobModel.find();
+        const {
+            jobTitle,
+            role,
+            jobType,
+            location,
+            experience,
+            education,
+            minSalary,
+            maxSalary,
+            skills,
+        } = req.query;
+
+        let filter = {};
+
+        if (jobTitle) filter.jobTitle = { $regex: jobTitle, $options: "i" };
+        if (role) filter.role = { $regex: role, $options: "i" };
+        if (jobType) filter.jobType = jobType;
+        if (location) filter.location = { $regex: location, $options: "i" };
+        if (experience) filter.experience = { $regex: experience, $options: "i" };
+        if (education) filter.education = { $regex: education, $options: "i" };
+        if (minSalary) filter["salary.minSalary"] = { $gte: Number(minSalary) };
+        if (maxSalary) filter["salary.maxSalary"] = { $lte: Number(maxSalary) };
+        if (skills) filter.skillsRequired = { $all: skills.split(",") };
+
+        const Jobs = await JobModel.find(filter);
         res.status(200).json({ success: true, totalJobs: Jobs.length, Jobs });
     } catch (error) {
         console.log(error);

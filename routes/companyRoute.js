@@ -2,7 +2,13 @@ const express = require("express");
 const router = express.Router();
 const upload = require("../middlewares/multer");
 
-const { createCompany } = require("../controllers/companyInfoController");
+const {
+    createCompany,
+    updateCompany,
+    getAllCompanies,
+    getCompany,
+    deleteCompany,
+} = require("../controllers/companyInfoController");
 const {
     createFoundingInfo,
     getFoundingInfo,
@@ -22,5 +28,17 @@ router.post(
     upload.fields([{ name: "logo" }, { name: "bannerImage" }]),
     createCompany
 );
+
+router.put(
+    "/companyInfo/:id",
+    upload.fields([{ name: "logo" }, { name: "bannerImage" }]),
+    updateCompany
+);
+
+router.get("/companyInfo", getAllCompanies);
+
+router.get("/companyInfo/:id", getCompany);
+
+router.delete("/companyInfo/:id", deleteCompany);
 
 module.exports = router;

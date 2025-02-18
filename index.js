@@ -11,7 +11,7 @@ const authRoutes = require("./routes/authRoute.js");
 const profileRoute = require("./routes/profileRoute.js");
 const jobPreferenceRoute = require("./routes/jobPreferenceRoute.js");
 const skillsExperienceRoute = require("./routes/skillsExperienceRoute.js");
-const applicationRoute = require("./routes/applicationRoute.js")
+const applicationRoute = require("./routes/applicationRoute.js");
 const app = express();
 
 app.use(express.json());
@@ -33,7 +33,7 @@ app.use("/skills-experience", skillsExperienceRoute);
 app.use("/job", jobRoute);
 app.use("/terms", termConditionRoute);
 app.use("/company", companyRoute);
-app.use("/application",applicationRoute);
+app.use("/application", applicationRoute);
 
 app.get("/", (req, res) => {
     res.json({ message: "Hello" });
