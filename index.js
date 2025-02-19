@@ -39,6 +39,14 @@ app.get("/", (req, res) => {
     res.json({ message: "Hello" });
 });
 
+//settings
+app.use('/settings/user', require('./routes/settings/userSettingsRoutes.js'));
+app.use('/settings/employer', require('./routes/settings/employerSettingsRoutes.js'));
+app.use('/settings/app-preferences', require('./routes/settings/appPreferencesRoutes.js'));
+app.use('/settings/notification-settings', require('./routes/settings/notificationSettingsRoutes.js'));
+app.use('/settings/sign-in-security', require('./routes/settings/signInSecurityRoutes.js'));
+app.use('/settings/change-password', require('./routes/settings/changePasswordRoutes.js'));
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
