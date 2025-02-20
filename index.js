@@ -13,10 +13,18 @@ const jobPreferenceRoute = require("./routes/jobPreferenceRoute.js");
 const skillsExperienceRoute = require("./routes/skillsExperienceRoute.js");
 const applicationRoute = require("./routes/applicationRoute.js");
 const app = express();
+const cors = require("cors");
 
 app.use(express.json());
 
 connectDB();
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
@@ -36,19 +44,34 @@ app.use("/company", companyRoute);
 app.use("/application", applicationRoute);
 
 app.get("/", (req, res) => {
-    res.json({ message: "Hello" });
+  res.json({ message: "Hello" });
 });
 
 //settings
-app.use('/settings/user', require('./routes/settings/userSettingsRoutes.js'));
-app.use('/settings/employer', require('./routes/settings/employerSettingsRoutes.js'));
-app.use('/settings/app-preferences', require('./routes/settings/appPreferencesRoutes.js'));
-app.use('/settings/notification-settings', require('./routes/settings/notificationSettingsRoutes.js'));
-app.use('/settings/sign-in-security', require('./routes/settings/signInSecurityRoutes.js'));
-app.use('/settings/change-password', require('./routes/settings/changePasswordRoutes.js'));
+app.use("/settings/user", require("./routes/settings/userSettingsRoutes.js"));
+app.use(
+  "/settings/employer",
+  require("./routes/settings/employerSettingsRoutes.js")
+);
+app.use(
+  "/settings/app-preferences",
+  require("./routes/settings/appPreferencesRoutes.js")
+);
+app.use(
+  "/settings/notification-settings",
+  require("./routes/settings/notificationSettingsRoutes.js")
+);
+app.use(
+  "/settings/sign-in-security",
+  require("./routes/settings/signInSecurityRoutes.js")
+);
+app.use(
+  "/settings/change-password",
+  require("./routes/settings/changePasswordRoutes.js")
+);
 
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
-    console.log(`Server started on port:${port}`);
+  console.log(`Server started on port:${port}`);
 });
