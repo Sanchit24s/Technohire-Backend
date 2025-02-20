@@ -1,6 +1,6 @@
 const express = require("express");
 const { createEmployerProfile, updateEmployerProfile, getEmployerProfile, deleteEmployerProfile } = require("../controllers/employerController.js");
-const { protect } = require('../middleware/EmployerAuthMiddleware.js');
+const { protect } = require('../middlewares/EmployerAuthMiddleware.js');
 const multer = require('multer');
 
 const router = express.Router();
