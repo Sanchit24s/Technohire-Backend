@@ -37,6 +37,10 @@ app.use("/profile", profileRoute);
 app.use("/job-preferences", jobPreferenceRoute);
 app.use("/skills-experience", skillsExperienceRoute);
 
+//for employer
+app.use('/employer/auth', require('./routes/EmployerAuthRoutes.js'));
+app.use('/employer/profile', require('./routes/employerRoutes.js'));
+
 // routes
 app.use("/job", jobRoute);
 app.use("/terms", termConditionRoute);
@@ -69,6 +73,18 @@ app.use(
   "/settings/change-password",
   require("./routes/settings/changePasswordRoutes.js")
 );
+
+//help & support
+app.use('/employer/help-support', require('./routes/employer/helpSupportRoutes.js'));
+
+//terms & conditions
+app.use('/employer/terms-conditions', require('./routes/employer/termsConditionsRoutes.js'));
+
+//saved candidates
+app.use('/employer/saved-candidates', require('./routes/employer/savedCandidatesRoutes.js'));
+
+//chat
+app.use('/chat', require('./routes/employer/chatRoutes.js'));
 
 const port = process.env.PORT || 3000;
 

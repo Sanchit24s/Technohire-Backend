@@ -1,4 +1,4 @@
-const appPreferencesService = require('../../services/settings/appPreferencesService.js');
+const appPreferencesService = require('../../services/settings/appPreferencesService');
 
 exports.getAppPreferences = async (req, res) => {
     try {
