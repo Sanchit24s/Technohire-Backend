@@ -3,7 +3,7 @@ const connectDB = require("./config/connectDB");
 require("dotenv").config();
 const session = require("express-session");
 const passport = require("passport");
-// require("./config/passport");
+require("./config/passport");
 const jobRoute = require("./routes/jobRoute");
 const termConditionRoute = require("./routes/termConditionRoute");
 const companyRoute = require("./routes/companyRoute");
