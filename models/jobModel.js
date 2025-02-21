@@ -2,6 +2,11 @@ const { Schema, model } = require("mongoose");
 
 const jobSchema = new Schema(
     {
+        employerId: {
+            type: Schema.Types.ObjectId,
+            ref: "Employer",
+            required: true,
+        },
         jobTitle: {
             type: String,
             required: true,
@@ -52,6 +57,15 @@ const jobSchema = new Schema(
         responsibilities: {
             type: [String],
             default: [],
+        },
+        expireDate: {
+            type: Date,
+            required: true,
+        },
+        status: {
+            type: String,
+            enum: ["Active", "Closed", "Expired"],
+            default: "Active",
         },
     },
     { timestamps: true }

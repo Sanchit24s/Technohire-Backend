@@ -54,6 +54,49 @@ const createJob = async (req, res) => {
     }
 };
 
+// update job 
+const updateJob = async (req, res) => {
+    try {
+        const { jobId } = req.params;
+        const updateFields = req.body;
+
+        // Validate jobId
+        if (!jobId) {
+            return res.status(400).json({
+                success: false,
+                message: "Job ID is required for updating.",
+            });
+        }
+
+        // Find and update the job
+        const updatedJob = await JobModel.findByIdAndUpdate(
+            jobId,
+            { $set: updateFields },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedJob) {
+            return res.status(404).json({
+                success: false,
+                message: "Job not found.",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Job updated successfully.",
+            job: updatedJob,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error.",
+        });
+    }
+};
+
+
 // get all jobs
 const getAllJobs = async (req, res) => {
     try {
@@ -67,6 +110,7 @@ const getAllJobs = async (req, res) => {
             minSalary,
             maxSalary,
             skills,
+            status,
         } = req.query;
 
         let filter = {};
@@ -80,6 +124,7 @@ const getAllJobs = async (req, res) => {
         if (minSalary) filter["salary.minSalary"] = { $gte: Number(minSalary) };
         if (maxSalary) filter["salary.maxSalary"] = { $lte: Number(maxSalary) };
         if (skills) filter.skillsRequired = { $all: skills.split(",") };
+        if (status) filter.status = status;
 
         const Jobs = await JobModel.find(filter);
         res.status(200).json({ success: true, totalJobs: Jobs.length, Jobs });
@@ -113,4 +158,68 @@ const getJobById = async (req, res) => {
     }
 };
 
-module.exports = { createJob, getAllJobs, getJobById };
+// get latest jobs
+const getLatestJobs = async (req, res) => {
+    try {
+        const { limit = 10 } = req.query;
+
+        let filter = {};
+
+        filter.status = "Active";
+
+        const latestJobs = await JobModel.find(filter)
+            .sort({ createdAt: -1 })
+            .limit(Number(limit));
+
+        res.status(200).json({
+            success: true,
+            totalJobs: latestJobs.length,
+            latestJobs,
+        });
+    } catch (error) {
+        console.error("Error fetching latest jobs:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+// toggle job status 
+const toggleJobStatus = async (req, res) => {
+    try {
+        const { jobId } = req.params;
+
+        const job = await JobModel.findById(jobId);
+        if (!job) {
+            return res.status(404).json({
+                success: false,
+                message: "Job not found",
+            });
+        }
+
+        job.status = job.status === "Active" ? "Closed" : "Active";
+        await job.save();
+
+        res.status(200).json({
+            success: true,
+            message: `Job status updated to ${job.status}`,
+            job,
+        });
+    } catch (error) {
+        console.error("Error toggling job status:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+module.exports = {
+    createJob,
+    getAllJobs,
+    getJobById,
+    getLatestJobs,
+    toggleJobStatus,
+    updateJob,
+};
