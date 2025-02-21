@@ -1,7 +1,6 @@
 const Application = require("../models/applicationModel");
 const mongoose = require("mongoose");
 
-
 // Get all applications with optional filtering and sorting
 const getApplications = async (req, res) => {
   try {
@@ -17,12 +16,31 @@ const getApplications = async (req, res) => {
       }
     }
 
-    if (sort) {
-      sortQuery[sort] = -1;
+    // if (sort) {
+    //   sortQuery[sort] = -1;
+    // }
+
+    if (sort === "Newest") {
+      sortQuery.createdAt = -1;
+    } else if (sort === "Oldest") {
+      sortQuery.createdAt = 1;
     }
 
     const applications = await Application.find(query).sort(sortQuery);
     res.json(applications);
+  } catch (error) {
+    res.status(500).json({ error: "Server error", details: error.message });
+  }
+};
+
+// get application counts
+
+const applicationCount = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const count = await Application.countDocuments({ jobRefId: id });
+    res.status(200).json({ count });
   } catch (error) {
     res.status(500).json({ error: "Server error", details: error.message });
   }
@@ -68,20 +86,26 @@ const getApplicationById = async (req, res) => {
 // Delete an application by ID
 const deleteApplication = async (req, res) => {
   try {
-    const deletedApplication = await Application.findByIdAndDelete(req.params.id);
+    const deletedApplication = await Application.findByIdAndDelete(
+      req.params.id
+    );
     if (!deletedApplication) {
       return res.status(404).json({ error: "Application not found" });
     }
     res.json({ message: "Application deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Failed to delete application", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to delete application", details: error.message });
   }
 };
 
 // Get all shortlisted applications
 const getShortlistedApplications = async (req, res) => {
   try {
-    const shortlistedApplications = await Application.find({ shortlisted: true });
+    const shortlistedApplications = await Application.find({
+      shortlisted: true,
+    });
     res.json(shortlistedApplications);
   } catch (error) {
     res.status(500).json({ error: "Server error", details: error.message });
@@ -91,26 +115,40 @@ const getShortlistedApplications = async (req, res) => {
 // Shortlist an application
 const shortlistApplication = async (req, res) => {
   try {
-    const application = await Application.findByIdAndUpdate(req.params.id, { shortlisted: true }, { new: true });
+    const application = await Application.findByIdAndUpdate(
+      req.params.id,
+      { shortlisted: true },
+      { new: true }
+    );
     if (!application) {
       return res.status(404).json({ error: "Application not found" });
     }
     res.json({ message: "Application shortlisted successfully", application });
   } catch (error) {
-    res.status(400).json({ error: "Failed to shortlist application", details: error.message });
+    res.status(400).json({
+      error: "Failed to shortlist application",
+      details: error.message,
+    });
   }
 };
 
 // Remove from shortlist
 const removeFromShortlist = async (req, res) => {
   try {
-    const application = await Application.findByIdAndUpdate(req.params.id, { shortlisted: false }, { new: true });
+    const application = await Application.findByIdAndUpdate(
+      req.params.id,
+      { shortlisted: false },
+      { new: true }
+    );
     if (!application) {
       return res.status(404).json({ error: "Application not found" });
     }
     res.json({ message: "Application removed from shortlist", application });
   } catch (error) {
-    res.status(400).json({ error: "Failed to update shortlist status", details: error.message });
+    res.status(400).json({
+      error: "Failed to update shortlist status",
+      details: error.message,
+    });
   }
 };
 
@@ -118,15 +156,18 @@ const deleteAllApplications = async (req, res) => {
   try {
     const { confirm } = req.query; // Get confirmation query param
     if (confirm !== "true") {
-      return res.status(400).json({ error: "Confirmation required. Add '?confirm=true' to proceed." });
+      return res.status(400).json({
+        error: "Confirmation required. Add '?confirm=true' to proceed.",
+      });
     }
     await Application.deleteMany({});
     res.json({ message: "All applications deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: "Failed to delete applications", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to delete applications", details: error.message });
   }
 };
-
 
 const downloadCV = async (req, res) => {
   try {
@@ -137,7 +178,7 @@ const downloadCV = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(applicationId)) {
       return res.status(400).json({ error: "Invalid application ID format" });
     }
-     const application = await Application.findById(applicationId);
+    const application = await Application.findById(applicationId);
 
     if (!application) {
       return res.status(404).json({ error: "Application not found" });
@@ -150,7 +191,6 @@ const downloadCV = async (req, res) => {
   }
 };
 
-
 module.exports = {
   getApplications,
   getApplicationById,
@@ -159,5 +199,6 @@ module.exports = {
   shortlistApplication,
   removeFromShortlist,
   deleteAllApplications,
-  downloadCV
+  downloadCV,
+  applicationCount,
 };
