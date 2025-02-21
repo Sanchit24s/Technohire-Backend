@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const applicationSchema = new mongoose.Schema(
   {
     userRefId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // have to change user model name accordingly(arya) 
+    jobRefId: { type: mongoose.Schema.Types.ObjectId, ref: "Job", required: true },
     name: { type: String, required: true, trim: true },
     designation: { type: String, required: true, trim: true },
     experience: { type: Number, required: true, min: 0 },
