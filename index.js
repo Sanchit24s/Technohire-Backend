@@ -86,6 +86,12 @@ app.use('/employer/saved-candidates', require('./routes/employer/savedCandidates
 //chat
 app.use('/chat', require('./routes/employer/chatRoutes.js'));
 
+//canditate profile routes
+app.use('/candidate-profile', require("./routes/candidateProfileRoutes.js"))
+
+//talent pool routes
+app.use('/talent-pool', require("./routes/talentPoolRoutes.js"))
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {

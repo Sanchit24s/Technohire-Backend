@@ -28,6 +28,8 @@ const UserSchema = new mongoose.Schema(
         resetPasswordExpires: { type: Date },
         profilePhoto: { type: String }, // Store photo path
         resume: { type: String }, // Store resume path
+        
+
     },
     { timestamps: true }
 );
