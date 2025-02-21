@@ -46,6 +46,18 @@ const applicationCount = async (req, res) => {
   }
 };
 
+// get application by job
+
+const applicationByJobId = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const applications = await Application.find({ jobRefId: id });
+    res.status(200).json({ applications });
+  } catch (error) {
+    res.status(500).json({ error: "Server error", details: error.message });
+  }
+};
+
 // Get application by ID
 const getApplicationById = async (req, res) => {
   try {
@@ -201,4 +213,5 @@ module.exports = {
   deleteAllApplications,
   downloadCV,
   applicationCount,
+  applicationByJobId,
 };

@@ -10,10 +10,12 @@ const {
   deleteAllApplications,
   downloadCV,
   applicationCount,
+  applicationByJobId,
 } = require("../controllers/applicationController");
 
 router.get("/", getApplications); // Get all applications (with filters & sorting)
 router.get("/shortlistedapplications", getShortlistedApplications); // Get all shortlisted applications
+router.get("/applicationByJobId/:id", applicationByJobId);
 router.get("/downloadcv/:id", downloadCV);
 router.get("/count/:id", applicationCount);
 router.get("/:id", getApplicationById); // Get application by ID
