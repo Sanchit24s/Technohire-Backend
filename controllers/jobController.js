@@ -54,7 +54,7 @@ const createJob = async (req, res) => {
     }
 };
 
-// update job 
+// update job
 const updateJob = async (req, res) => {
     try {
         const { jobId } = req.params;
@@ -96,7 +96,6 @@ const updateJob = async (req, res) => {
     }
 };
 
-
 // get all jobs
 const getAllJobs = async (req, res) => {
     try {
@@ -128,6 +127,20 @@ const getAllJobs = async (req, res) => {
 
         const Jobs = await JobModel.find(filter);
         res.status(200).json({ success: true, totalJobs: Jobs.length, Jobs });
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(500)
+            .json({ success: false, message: "Internal server error" });
+    }
+};
+
+// get open job count
+const getJobCount = async (req, res) => {
+    try {
+        const jobs = await JobModel.find({ status: "Active" });
+
+        res.status(200).json({ success: true, openJobsCount: jobs.length });
     } catch (error) {
         console.log(error);
         return res
@@ -185,7 +198,7 @@ const getLatestJobs = async (req, res) => {
     }
 };
 
-// toggle job status 
+// toggle job status
 const toggleJobStatus = async (req, res) => {
     try {
         const { jobId } = req.params;
@@ -222,4 +235,5 @@ module.exports = {
     getLatestJobs,
     toggleJobStatus,
     updateJob,
+    getJobCount,
 };
