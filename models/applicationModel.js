@@ -11,7 +11,10 @@ const applicationSchema = new mongoose.Schema(
     appliedDate: { type: Date, default: Date.now },
     shortlisted: { type: Boolean, default: false },
     profileImage: { type: String, trim: true },
-    resumeUrl: { type: String, trim: true }
+    resumeUrl: { type: String, trim: true },
+    screeningStatus: { type: String, enum: ["Pending", "Passed", "Failed"], default: "Pending" },
+    interviewScheduled: {type: Boolean, default: false},
+    interviewDate: {type: Date}
 },
 
 { timestamps: true } 

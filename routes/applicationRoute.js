@@ -11,7 +11,13 @@ const {
   downloadCV,
   applicationCount,
   applicationByJobId,
+  updateScreeningStatus,
+  scheduleInterview,
+  getScheduledInterviews,
+  createApplication,
+  updateApplication
 } = require("../controllers/applicationController");
+const {protect} = require("../middlewares/authMiddleware.js")
 
 router.get("/", getApplications); // Get all applications (with filters & sorting)
 router.get("/shortlistedapplications", getShortlistedApplications); // Get all shortlisted applications
@@ -26,4 +32,12 @@ router.post("/shortlistapplication/:id", shortlistApplication); // Shortlist an 
 router.delete("/removeshortlist/:id", removeFromShortlist); // Remove from shortlist
 router.delete("/deleteallapplications", deleteAllApplications); // Delete all applications
 
+// New routes for screening and interview scheduling
+router.put("/updatescreeningstatus/:id", updateScreeningStatus); // Update screening status
+router.post("/scheduleinterview/:id", protect ,scheduleInterview); // Schedule an interview
+router.get("/scheduledinterviews", getScheduledInterviews); // Get all scheduled interviews
+
+//
+router.post("/createapplication", createApplication)
+router.put("/updateapplication/:id", updateApplication)
 module.exports = router;
