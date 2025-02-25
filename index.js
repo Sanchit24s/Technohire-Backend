@@ -74,6 +74,8 @@ app.use(
   require("./routes/settings/changePasswordRoutes.js")
 );
 
+
+
 //help & support
 app.use('/employer/help-support', require('./routes/employer/helpSupportRoutes.js'));
 
@@ -91,6 +93,12 @@ app.use('/candidate-profile', require("./routes/candidateProfileRoutes.js"))
 
 //talent pool routes
 app.use('/talent-pool', require("./routes/talentPoolRoutes.js"))
+
+//web setting social media links employer
+app.use('/settings/social-links', require('./routes/settings/EmployerSocialMediaLinkRoutes.js'))
+//web setitng accountemployer
+app.use('/settings/employer-account', require('./routes/settings/employerAccountSettingRoutes.js'))
+
 
 const port = process.env.PORT || 3000;
 
