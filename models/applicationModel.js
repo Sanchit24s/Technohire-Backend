@@ -20,17 +20,10 @@ const applicationSchema = new mongoose.Schema(
     shortlisted: { type: Boolean, default: false },
     profileImage: { type: String, trim: true },
     resumeUrl: { type: String, trim: true },
-<<<<<<< HEAD
     screeningStatus: { type: String, enum: ["Pending", "Passed", "Failed"], default: "Pending" },
-    interviewScheduled: {type: Boolean, default: false},
-    interviewDate: {type: Date}
-},
-
-{ timestamps: true } 
-=======
+    interviewScheduled: { type: Boolean, default: false },
+    interviewDate: { type: Date }
   },
->>>>>>> ce0967b (passed user and job id)
-
   { timestamps: true }
 );
 
