@@ -1,73 +1,50 @@
-const Company = require("../models/companyInfoModel"); // Import the Company model
+const Company = require("../models/companyInfoModel");
 
-// CREATE COMPANY INFO
 const createCompany = async (req, res) => {
     try {
-        const { name, aboutUs } = req.body;
+        const {
+            name, aboutUs, vision, benefits, website, email, phone, location,
+            foundedIn, orgType, teamSize, industry, facebook, instagram, twitter, youtube
+        } = req.body;
 
-        if (!name || !aboutUs) {
-            return res.status(400).json({ error: "Name and About Us are required." });
+        if (!name || !aboutUs || !email || !phone) {
+            return res.status(400).json({ error: "Name, About Us, Email, and Phone are required." });
         }
 
-        // Upload images (if provided)
-        let logoUrl = null;
-        let bannerUrl = null;
-
-        if (req.files["logo"]) {
-            logoUrl = req.files["logo"][0].path; // Cloudinary URL
-        }
-
-        if (req.files["bannerImage"]) {
-            bannerUrl = req.files["bannerImage"][0].path; // Cloudinary URL
-        }
+        // Handle file uploads (Check if multer is configured correctly)
+        let logoUrl = req.files?.logo ? req.files.logo[0].path : null;
+        let bannerUrl = req.files?.bannerImage ? req.files.bannerImage[0].path : null;
 
         // Create new company entry
         const company = new Company({
-            name,
-            aboutUs,
+            name, aboutUs, vision, benefits, website, email, phone, location,
+            foundedIn, orgType, teamSize, industry, facebook, instagram, twitter, youtube,
             logo: logoUrl,
             bannerImage: bannerUrl,
         });
 
         await company.save();
-
         res.status(201).json({ message: "Company created successfully", company });
     } catch (error) {
         console.error("Error creating company:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
-
-//  UPDATE COMPANY INFO
+// UPDATE COMPANY INFO
 const updateCompany = async (req, res) => {
     try {
-        const { name, aboutUs } = req.body;
         const { id } = req.params;
-
-        if (!id) {
-            return res.status(400).json({ message: "Id is required" });
-        }
+        if (!id) return res.status(400).json({ message: "Company ID is required" });
 
         const company = await Company.findById(id);
+        if (!company) return res.status(404).json({ message: "Company not found" });
 
-        if (!company) {
-            return res.status(404).json({ message: "Company not found" });
-        }
+        Object.assign(company, req.body);
 
-        // Update fields if provided
-        if (name) company.name = name;
-        if (aboutUs) company.aboutUs = aboutUs;
-
-        if (req.files["logo"]) {
-            company.logo = req.files["logo"][0].path;
-        }
-
-        if (req.files["bannerImage"]) {
-            company.bannerImage = req.files["bannerImage"][0].path;
-        }
+        if (req.files["logo"]) company.logo = req.files["logo"][0].path;
+        if (req.files["bannerImage"]) company.bannerImage = req.files["bannerImage"][0].path;
 
         await company.save();
-
         res.status(200).json({ message: "Company updated successfully", company });
     } catch (error) {
         console.error("Error updating company:", error);
@@ -81,7 +58,7 @@ const getAllCompanies = async (req, res) => {
         const companies = await Company.find({});
         res.status(200).json({ companies });
     } catch (error) {
-        console.error("Error getting company:", error);
+        console.error("Error fetching companies:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
@@ -90,37 +67,27 @@ const getAllCompanies = async (req, res) => {
 const getCompany = async (req, res) => {
     try {
         const { id } = req.params;
-        if (!id) {
-            return res.status(400).json({ message: "Id is required." });
-        }
+        if (!id) return res.status(400).json({ message: "Company ID is required." });
 
         const company = await Company.findById(id);
-
-        if (!company) {
-            return res.status(404).json({ message: "Company not found." });
-        }
+        if (!company) return res.status(404).json({ message: "Company not found." });
 
         res.status(200).json({ message: "Company fetched successfully.", company });
     } catch (error) {
-        console.error("Error getting company:", error);
+        console.error("Error fetching company:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
 
+// DELETE COMPANY INFO
 const deleteCompany = async (req, res) => {
     try {
         const { id } = req.params;
-        if (!id) {
-            return res.status(400).json({ message: "Id is required." });
-        }
+        if (!id) return res.status(400).json({ message: "Company ID is required." });
 
-        const company = await Company.findById(id);
+        const company = await Company.findByIdAndDelete(id);
+        if (!company) return res.status(404).json({ message: "Company not found." });
 
-        if (!company) {
-            return res.status(404).json({ message: "Company not found." });
-        }
-
-        await Company.findByIdAndDelete(id);
         res.status(200).json({ message: "Company deleted successfully" });
     } catch (error) {
         console.error("Error deleting company:", error);
