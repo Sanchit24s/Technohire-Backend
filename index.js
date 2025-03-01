@@ -12,16 +12,38 @@ const profileRoute = require("./routes/profileRoute.js");
 const jobPreferenceRoute = require("./routes/jobPreferenceRoute.js");
 const skillsExperienceRoute = require("./routes/skillsExperienceRoute.js");
 const applicationRoute = require("./routes/applicationRoute.js");
+const paymentRoute = require("./routes/paymentRoute.js");
 const app = express();
 const cors = require("cors");
+const path = require("path");
+
+// Serve static files
+app.use(express.static(path.join(__dirname, "routes")));
 
 app.use(express.json());
 
 connectDB();
 
+// app.use(
+//   cors({
+//     origin: ["http://localhost:3000", "https://technohire001.netlify.app"],
+//     credentials: true,
+//   })
+// );
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://technohire001.netlify.app",
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
@@ -38,8 +60,8 @@ app.use("/job-preferences", jobPreferenceRoute);
 app.use("/skills-experience", skillsExperienceRoute);
 
 //for employer
-app.use('/employer/auth', require('./routes/EmployerAuthRoutes.js'));
-app.use('/employer/profile', require('./routes/employerRoutes.js'));
+app.use("/employer/auth", require("./routes/EmployerAuthRoutes.js"));
+app.use("/employer/profile", require("./routes/employerRoutes.js"));
 
 // routes
 app.use("/job", jobRoute);
@@ -47,9 +69,11 @@ app.use("/terms", termConditionRoute);
 app.use("/company", companyRoute);
 app.use("/application", applicationRoute);
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello" });
-});
+app.use("/payment", paymentRoute);
+
+// app.get("/", (req, res) => {
+//   res.json({ message: "Hello" });
+// });
 
 //settings
 app.use("/settings/user", require("./routes/settings/userSettingsRoutes.js"));
@@ -77,22 +101,31 @@ app.use(
 
 
 //help & support
-app.use('/employer/help-support', require('./routes/employer/helpSupportRoutes.js'));
+app.use(
+  "/employer/help-support",
+  require("./routes/employer/helpSupportRoutes.js")
+);
 
 //terms & conditions
-app.use('/employer/terms-conditions', require('./routes/employer/termsConditionsRoutes.js'));
+app.use(
+  "/employer/terms-conditions",
+  require("./routes/employer/termsConditionsRoutes.js")
+);
 
 //saved candidates
-app.use('/employer/saved-candidates', require('./routes/employer/savedCandidatesRoutes.js'));
+app.use(
+  "/employer/saved-candidates",
+  require("./routes/employer/savedCandidatesRoutes.js")
+);
 
 //chat
-app.use('/chat', require('./routes/employer/chatRoutes.js'));
+app.use("/chat", require("./routes/employer/chatRoutes.js"));
 
 //canditate profile routes
-app.use('/candidate-profile', require("./routes/candidateProfileRoutes.js"))
+app.use("/candidate-profile", require("./routes/candidateProfileRoutes.js"));
 
 //talent pool routes
-app.use('/talent-pool', require("./routes/talentPoolRoutes.js"))
+app.use("/talent-pool", require("./routes/talentPoolRoutes.js"));
 
 //web setting social media links employer
 app.use('/settings/social-links', require('./routes/settings/EmployerSocialMediaLinkRoutes.js'))
