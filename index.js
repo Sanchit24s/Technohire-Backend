@@ -12,7 +12,7 @@ const profileRoute = require("./routes/profileRoute.js");
 const jobPreferenceRoute = require("./routes/jobPreferenceRoute.js");
 const skillsExperienceRoute = require("./routes/skillsExperienceRoute.js");
 const applicationRoute = require("./routes/applicationRoute.js");
-const paymentRoute = require("./routes/paymentRoute.js");
+// const paymentRoute = require("./routes/paymentRoute.js");
 const app = express();
 const cors = require("cors");
 const path = require("path");
@@ -69,7 +69,7 @@ app.use("/terms", termConditionRoute);
 app.use("/company", companyRoute);
 app.use("/application", applicationRoute);
 
-app.use("/payment", paymentRoute);
+// app.use("/payment", paymentRoute);
 
 // app.get("/", (req, res) => {
 //   res.json({ message: "Hello" });
@@ -97,8 +97,6 @@ app.use(
   "/settings/change-password",
   require("./routes/settings/changePasswordRoutes.js")
 );
-
-
 
 //help & support
 app.use(
@@ -128,14 +126,19 @@ app.use("/candidate-profile", require("./routes/candidateProfileRoutes.js"));
 app.use("/talent-pool", require("./routes/talentPoolRoutes.js"));
 
 //web setting social media links employer
-app.use('/settings/social-links', require('./routes/settings/EmployerSocialMediaLinkRoutes.js'))
+app.use(
+  "/settings/social-links",
+  require("./routes/settings/EmployerSocialMediaLinkRoutes.js")
+);
 //web setitng accountemployer
-app.use('/settings/employer-account', require('./routes/settings/employerAccountSettingRoutes.js'))
+app.use(
+  "/settings/employer-account",
+  require("./routes/settings/employerAccountSettingRoutes.js")
+);
 
 //
 
 //
-
 
 const port = process.env.PORT || 3000;
 
