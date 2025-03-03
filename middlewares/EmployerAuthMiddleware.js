@@ -36,3 +36,11 @@ exports.protect = async (req, res, next) => {
         res.status(401).json({ msg: 'Authentication failed!' });
     }
 };
+
+// ✅ Middleware to check phone verification
+exports.requirePhoneVerification = async (req, res, next) => {
+    if (!req.employer.phoneVerified) {
+        return res.status(403).json({ message: 'Phone number is not verified' });
+    }
+    next();
+};

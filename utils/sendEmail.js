@@ -11,8 +11,7 @@ const transport = nodemailer.createTransport({
     },
 });
 
-// Send verification email
-const sendVerificationEmail = async (user, res) => {
+const sendVerificationEmail = async (user) => {
     try {
         const verificationToken = crypto.randomBytes(32).toString("hex");
         user.verificationToken = verificationToken;
@@ -33,15 +32,10 @@ const sendVerificationEmail = async (user, res) => {
         };
 
         await transport.sendMail(mailOptions);
-        res.status(200).json({ msg: "Verification email sent. Check your inbox." });
+        return { success: true, message: "Verification email sent. Check your inbox." };
     } catch (error) {
         console.error("Error Sending Verification Email:", error);
-        res
-            .status(500)
-            .json({
-                msg: "Failed to send verification email.",
-                error: error.message,
-            });
+        return { success: false, message: "Failed to send verification email.", error: error.message };
     }
 };
 
@@ -81,8 +75,34 @@ const sendPasswordResetEmail = async (user, res) => {
             });
     }
 };
+const sendOTPEmail = async (user) => {
+    try {
+        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate 6-digit OTP
+        user.otp = otp;
+        user.otpExpires = Date.now() + 3600000; // OTP valid for 1 hour
+        await user.save();
+
+        const mailOptions = {
+            from: `"Your Company" <${process.env.EMAIL_USER}>`,
+            to: user.email,
+            subject: "Your OTP for Verification",
+            html: `
+                <p>Hello ${user.fullName},</p>
+                <p>Your OTP is: <strong>${otp}</strong></p>
+                <p>This OTP will expire in 1 hour.</p>
+            `,
+        };
+
+        await transport.sendMail(mailOptions);
+        return { success: true, message: "OTP email sent. Check your inbox." };
+    } catch (error) {
+        console.error("Error Sending OTP Email:", error);
+        return { success: false, message: "Failed to send OTP email.", error: error.message };
+    }
+};
 
 module.exports = {
     sendVerificationEmail,
     sendPasswordResetEmail,
+    sendOTPEmail
 };

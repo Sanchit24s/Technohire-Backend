@@ -1,3 +1,4 @@
+
 const Employer = require('../models/Employer.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -15,16 +16,25 @@ exports.register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         employer = new Employer({ companyName, email, password: hashedPassword });
 
-         // Send verification email
-         const emailResult = await sendVerificationEmail(employer);
-         console.log(emailResult);
- 
-         // Send OTP email
-         const otpResult = await sendOTPEmail(employer);
-         console.log(otpResult);
+        // Save the employer to the database
+        await employer.save();
 
-         res.status(200).json({ msg: 'Employer registered successfully' });
+        // Send verification email
+        const verificationResult = await sendVerificationEmail(employer);
+        if (!verificationResult.success) {
+            return res.status(500).json({ msg: verificationResult.message });
+        }
+
+        // Send OTP email
+        const otpResult = await sendOTPEmail(employer);
+        if (!otpResult.success) {
+            return res.status(500).json({ msg: otpResult.message });
+        }
+
+        // Send a single response
+        res.status(200).json({ msg: 'Employer registered successfully. Check your email for verification and OTP.' });
     } catch (error) {
+        console.error("Error in register:", error);
         res.status(500).json({ msg: error.message });
     }
 };

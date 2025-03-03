@@ -1,6 +1,7 @@
 const express = require('express');
 const passport = require('passport');
-const {register, verifyEmail, forgotPassword,resetPassword, login, verifyOTP} =  require('../controllers/EmployerAuthController.js');
+const {register, verifyEmail, forgotPassword,resetPassword, login, verifyOTP, verifyPhone, sendPhoneOtp} =  require('../controllers/EmployerAuthController.js');
+
 
 const router = express.Router();
 
@@ -9,6 +10,12 @@ router.post('/register', register);
 
 //Verify otp
 router.post('/verify-otp', verifyOTP);
+
+// // // ✅ Send OTP for phone verification
+// router.post('/send-phone-otp', protect, sendPhoneOtp)
+
+// // ✅ Verify phone with OTP
+// router.post('/verify-phone', protect, verifyPhone)
 
 //login
 router.post('/login', login)

@@ -8,6 +8,11 @@ const EmployerSchema = new mongoose.Schema({
         unique: true,
         match: [/^[\w.-]+@[a-zA-Z\d.-]+\.[a-zA-Z]{2,}$/, "Invalid email format."]
     },
+    phone: { 
+        type: String, 
+        unique: true,
+        match: [/^\+?[1-9]\d{1,14}$/, "Invalid phone number format."]
+    },
     password: { type: String },
     googleId: { type: String },
     linkedinId: { type: String },
