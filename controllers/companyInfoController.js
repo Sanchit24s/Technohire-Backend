@@ -1,4 +1,5 @@
-const Company = require("../models/companyInfoModel");
+const Company = require("../models/companyInfoModel"); // Import the Company model
+const Employer = require("../models/Employer");
 
 const createCompany = async (req, res) => {
     try {
@@ -95,10 +96,21 @@ const deleteCompany = async (req, res) => {
     }
 };
 
+const getAllCompaniesCount = async (req, res) => {
+    try {
+        const companies = await Employer.find();
+        res.status(200).json({ companiesCount: companies.length });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ msg: "Internal server error" });
+    }
+};
+
 module.exports = {
     createCompany,
     updateCompany,
     getAllCompanies,
     getCompany,
     deleteCompany,
+    getAllCompaniesCount,
 };

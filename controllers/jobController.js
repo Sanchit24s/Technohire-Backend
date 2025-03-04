@@ -15,13 +15,15 @@ const createJob = async (req, res) => {
             skillsRequired,
             jobDescription,
             responsibilities,
+            expireDate,
+            employerId,
         } = req.body;
 
         // validate required fields
-        if (!jobTitle || !jobDescription) {
+        if (!jobTitle || !jobDescription || !expireDate) {
             return res.status(400).json({
                 success: false,
-                message: "Job title and description are required.",
+                message: "Job title, expire date and description are required.",
             });
         }
 
@@ -37,6 +39,8 @@ const createJob = async (req, res) => {
             skillsRequired: skillsRequired || [],
             jobDescription,
             responsibilities: responsibilities || [],
+            expireDate,
+            employerId,
         });
 
         await newJob.save();
@@ -228,6 +232,44 @@ const toggleJobStatus = async (req, res) => {
     }
 };
 
+const getNewJobs = async (req, res) => {
+    try {
+        const currentDate = new Date();
+        const twoDaysAgo = new Date();
+        twoDaysAgo.setDate(currentDate.getDate() - 2);
+
+        const newJobs = await JobModel.find({
+            status: "Active",
+            expireDate: { $gte: currentDate },
+            createdAt: { $gte: twoDaysAgo },
+        }).sort({ createdAt: -1 });
+
+        res.status(200).json({ success: true, newJobs });
+    } catch (error) {
+        console.error("Error fetching new jobs:", error);
+        throw new Error("Failed to fetch new jobs");
+    }
+};
+
+const getNewJobsCount = async (req, res) => {
+    try {
+        const currentDate = new Date();
+        const twoDaysAgo = new Date();
+        twoDaysAgo.setDate(currentDate.getDate() - 2);
+
+        const newJobs = await JobModel.find({
+            status: "Active",
+            expireDate: { $gte: currentDate },
+            createdAt: { $gte: twoDaysAgo },
+        }).sort({ createdAt: -1 });
+
+        res.status(200).json({ success: true, newJobsCount: newJobs.length });
+    } catch (error) {
+        console.error("Error fetching new jobs:", error);
+        throw new Error("Failed to fetch new jobs");
+    }
+};
+
 module.exports = {
     createJob,
     getAllJobs,
@@ -236,4 +278,6 @@ module.exports = {
     toggleJobStatus,
     updateJob,
     getJobCount,
+    getNewJobs,
+    getNewJobsCount,
 };

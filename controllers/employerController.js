@@ -1,11 +1,12 @@
-const EmployerProfile = require('../models/EmployerProfile.js');
-const Employer = require('../models/Employer.js');
+const EmployerProfile = require("../models/EmployerProfile.js");
+const Employer = require("../models/Employer.js");
 
 // Create Employer Profile
 exports.createEmployerProfile = async (req, res) => {
     try {
-        const { foundedYear, sector, numberOfEmployees, location, socialLinks } = req.body;
-        
+        const { foundedYear, sector, numberOfEmployees, location, socialLinks } =
+            req.body;
+
         const employerProfile = await EmployerProfile.create({
             employer: req.user._id,
             foundedYear,
@@ -13,8 +14,10 @@ exports.createEmployerProfile = async (req, res) => {
             numberOfEmployees,
             location,
             socialLinks,
-            coverImage: req.files?.coverImage ? req.files['coverImage'][0].path : null,
-            logo: req.files?.logo ? req.files['logo'][0].path : null
+            coverImage: req.files?.coverImage
+                ? req.files["coverImage"][0].path
+                : null,
+            logo: req.files?.logo ? req.files["logo"][0].path : null,
         });
 
         res.status(201).json({ employerProfile });
@@ -26,25 +29,30 @@ exports.createEmployerProfile = async (req, res) => {
 // Update Employer Profile
 exports.updateEmployerProfile = async (req, res) => {
     try {
-        const { foundedYear, sector, numberOfEmployees, location, socialLinks } = req.body;
+        const { foundedYear, sector, numberOfEmployees, location, socialLinks } =
+            req.body;
 
         const updatedData = {
             foundedYear,
             sector,
             numberOfEmployees,
             location,
-            socialLinks
+            socialLinks,
         };
 
         if (req.files?.coverImage) {
-            updatedData.coverImage = req.files['coverImage'][0].path;
+            updatedData.coverImage = req.files["coverImage"][0].path;
         }
 
         if (req.files?.logo) {
-            updatedData.logo = req.files['logo'][0].path;
+            updatedData.logo = req.files["logo"][0].path;
         }
 
-        const employerProfile = await EmployerProfile.findByIdAndUpdate(req.params.id, updatedData, { new: true });
+        const employerProfile = await EmployerProfile.findByIdAndUpdate(
+            req.params.id,
+            updatedData,
+            { new: true }
+        );
 
         res.status(200).json({ employerProfile });
     } catch (error) {
@@ -57,7 +65,9 @@ exports.updateEmployerProfile = async (req, res) => {
 exports.getEmployerProfile = async (req, res) => {
     try {
         console.log("Fetching Employer Profile with ID:", req.params.id);
-        const employerProfile = await EmployerProfile.findById(req.params.id).populate('employer');
+        const employerProfile = await EmployerProfile.findById(
+            req.params.id
+        ).populate("employer");
         if (!employerProfile) {
             console.log("Employer Profile not found");
             return res.status(404).json({ msg: "Employer not found" });
@@ -70,11 +80,12 @@ exports.getEmployerProfile = async (req, res) => {
     }
 };
 
-
 // Delete Employer Profile
 exports.deleteEmployerProfile = async (req, res) => {
     try {
-        const employerProfile = await EmployerProfile.findByIdAndDelete(req.params.id);
+        const employerProfile = await EmployerProfile.findByIdAndDelete(
+            req.params.id
+        );
         if (!employerProfile) {
             return res.status(404).json({ msg: "Employer not found" });
         }
