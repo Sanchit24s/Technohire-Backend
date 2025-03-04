@@ -62,6 +62,7 @@ exports.updateEmployerProfile = async (req, res) => {
 
 // Get Employer Profile
 // Get Employer Profile
+// Get Employer Profile
 exports.getEmployerProfile = async (req, res) => {
     try {
         console.log("Fetching Employer Profile with ID:", req.params.id);
@@ -70,7 +71,7 @@ exports.getEmployerProfile = async (req, res) => {
         ).populate("employer");
         if (!employerProfile) {
             console.log("Employer Profile not found");
-            return res.status(404).json({ msg: "Employer not found" });
+            return res.status(404).json({ msg: "Employer profile not found" });
         }
         console.log("Employer Profile found:", employerProfile);
         res.status(200).json({ employerProfile });

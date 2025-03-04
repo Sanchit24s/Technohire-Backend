@@ -21,7 +21,10 @@ const EmployerSchema = new mongoose.Schema({
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
     otp: {type: String},
-    otpExpires: {type: Date}
+    otpExpires: {type: Date},
+    phoneVerified: {type: Boolean, default: false},
+    phoneOtp: {type: String},
+    phoneOtpExpires: {type: Date}
 }, { timestamps: true });
 
 module.exports = mongoose.model('Employer', EmployerSchema);
