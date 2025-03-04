@@ -4,38 +4,37 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { sendPasswordResetEmail, sendVerificationEmail , sendOTPEmail} = require('../utils/sendEmail.js');
-const {sendPhoneOtp} = require('../utils/sendPhoneOTP.js')
+const {sendOtp, verifyOTP} = require('../utils/sendPhoneOTP.js')
 require('dotenv').config();
 
 exports.register = async (req, res) => {
-    const { companyName, email, password } = req.body;
+    const { companyName, email, password, phone } = req.body;
 
     try {
         let employer = await Employer.findOne({ email });
         if (employer) return res.status(400).json({ msg: 'Email already exists' });
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        employer = new Employer({ companyName, email, password: hashedPassword });
+        employer = new Employer({ companyName, email, password: hashedPassword, phone });
 
         // Save the employer to the database
         await employer.save();
-
-        // // Send verification email
+         // // Send verification email
         // const verificationResult = await sendVerificationEmail(employer);
         // if (!verificationResult.success) {
         //     return res.status(500).json({ msg: verificationResult.message });
         // }
 
-        // Send OTP email
-        const otpResult = await sendOTPEmail(employer);
-        if (!otpResult.success) {
-            return res.status(500).json({ msg: otpResult.message });
+        // Send OTP to phone
+        const otpPhoneResult = await sendOtp(employer);
+        if (!otpPhoneResult.success) {
+            return res.status(500).json({ msg: otpPhoneResult.message });
         }
 
         // Send a single response
-        res.status(200).json({ msg: 'Employer registered successfully. Check your email for verification and OTP.' });
+        res.status(200).json({ msg: 'Employer registered successfully. Check your phone for OTP.' });
     } catch (error) {
-        console.error("Error in register:", error);
+        console.error('Error in register:', error);
         res.status(500).json({ msg: error.message });
     }
 };
@@ -66,17 +65,12 @@ exports.sendPhoneOtp = async (req, res) => {
         const employer = await Employer.findOne({ phone });
         if (!employer) return res.status(400).json({ msg: 'No user found with this phone number' });
 
-        const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate 6-digit OTP
-        employer.phoneOtp = otp;
-        employer.phoneOtpExpires = Date.now() + 3600000; // OTP valid for 1 hour
-        await employer.save();
-
-        const otpResult = await sendPhoneOTP(phone, otp);
+        const otpResult = await sendOTP(phone);
         if (!otpResult.success) {
             return res.status(500).json({ msg: otpResult.message });
         }
 
-        res.status(200).json({ msg: 'OTP sent to your phone.' });
+        res.status(200).json({ msg: 'OTP sent to your phone.', verificationSid: otpResult.verificationSid });
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
@@ -84,18 +78,24 @@ exports.sendPhoneOtp = async (req, res) => {
 
 // Verify phone OTP
 exports.verifyPhone = async (req, res) => {
-    const { phone, otp } = req.body;
+    const { phone, code } = req.body;
 
     try {
-        const employer = await Employer.findOne({ phone, phoneOtp: otp, phoneOtpExpires: { $gt: Date.now() } });
-        if (!employer) return res.status(400).json({ msg: 'Invalid or expired OTP' });
+        const employer = await Employer.findOne({ phone });
+        if (!employer) return res.status(400).json({ msg: 'No user found with this phone number' });
 
-        employer.phoneVerified = true;
-        employer.phoneOtp = undefined;
-        employer.phoneOtpExpires = undefined;
-        await employer.save();
+        const verificationResult = await verifyOTP(phone, code);
+        if (!verificationResult.success) {
+            return res.status(500).json({ msg: verificationResult.message });
+        }
 
-        res.status(200).json({ msg: 'Phone number verified successfully.' });
+        if (verificationResult.status === 'approved') {
+            employer.phoneVerified = true;
+            await employer.save();
+            res.status(200).json({ msg: 'Phone number verified successfully.' });
+        } else {
+            res.status(400).json({ msg: 'Invalid or expired OTP' });
+        }
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }

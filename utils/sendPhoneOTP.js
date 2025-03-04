@@ -1,27 +1,49 @@
-const twilio = require('twilio')
-require('dotenv').config()
+const twilio = require('twilio');
+require('dotenv').config();
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
-const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER;
+const serviceSid = process.env.TWILIO_SERVICE_SID;
 
-const client = twilio(accountSid,authToken);
+const client = twilio(accountSid, authToken);
 
-const sendPhoneOtp = async(phoneNumber,otp) => {
+const sendOtp = async (phoneNumber) => {
     try {
-        const message = await client.messages.create({
-            body: `Your OTP For verfication is : ${otp}`,
-            from: twilioPhoneNumber,
-            to: phoneNumber
-        });
-        console.log("OTP sent via SMS:", message.sid)
-        return { success: true, message: "OTP sent successfully." };
+        console.log('Sending OTP to:', phoneNumber); // Debug log
+        const verification = await client.verify.v2
+            .services(serviceSid)
+            .verifications.create({
+                to: phoneNumber,
+                channel: 'sms',
+            });
+
+        console.log('OTP sent via SMS:', verification.sid);
+        return { success: true, message: 'OTP sent successfully.', verificationSid: verification.sid };
     } catch (error) {
-        console.error('Error sending OPT via SMS:', error);
-        return {success: false, message: "Failed to send OTP via SMS.", error: error.message}
+        console.error('Error sending OTP via SMS:', error);
+        return { success: false, message: 'Failed to send OTP via SMS.', error: error.message };
     }
-}
+};
+
+// Verify OTP
+const verifyOTP = async (phoneNumber, code) => {
+    try {
+        const verificationCheck = await client.verify.v2
+            .services(serviceSid)
+            .verificationChecks.create({
+                to: phoneNumber,
+                code: code,
+            });
+
+        console.log('Verification check:', verificationCheck.status);
+        return { success: true, status: verificationCheck.status };
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        return { success: false, message: 'Failed to verify OTP.', error: error.message };
+    }
+};
 
 module.exports = {
-    sendPhoneOtp
-}
+    sendOtp,
+    verifyOTP,
+};

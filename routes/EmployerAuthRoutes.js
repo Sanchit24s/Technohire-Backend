@@ -1,6 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-const {register, verifyEmail, forgotPassword,resetPassword, login, verifyOTP, sendPhoneOtp, verifyPhone, getEmployerDetails} =  require('../controllers/EmployerAuthController.js');
+const {register, verifyEmail, forgotPassword,resetPassword, login, verifyOTP,  getEmployerDetails, verifyPhone, sendPhoneOtp} =  require('../controllers/EmployerAuthController.js');
 
 
 const router = express.Router();
