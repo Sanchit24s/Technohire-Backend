@@ -12,6 +12,7 @@ const profileRoute = require("./routes/profileRoute.js");
 const jobPreferenceRoute = require("./routes/jobPreferenceRoute.js");
 const skillsExperienceRoute = require("./routes/skillsExperienceRoute.js");
 const applicationRoute = require("./routes/applicationRoute.js");
+const interviewRoute = require("./routes/interviewRoute.js");
 // const paymentRoute = require("./routes/paymentRoute.js");
 const app = express();
 const cors = require("cors");
@@ -68,6 +69,7 @@ app.use("/job", jobRoute);
 app.use("/terms", termConditionRoute);
 app.use("/company", companyRoute);
 app.use("/application", applicationRoute);
+app.use("/interview", interviewRoute);
 
 // app.use("/payment", paymentRoute);
 
