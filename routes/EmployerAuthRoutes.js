@@ -1,6 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-const {register, verifyEmail, forgotPassword,resetPassword, login, verifyOTP, verifyPhone, sendPhoneOtp} =  require('../controllers/EmployerAuthController.js');
+const {register, verifyEmail, forgotPassword,resetPassword, login, verifyOTP,  getEmployerDetails, verifyPhone, sendPhoneOtp} =  require('../controllers/EmployerAuthController.js');
 
 
 const router = express.Router();
@@ -16,6 +16,14 @@ router.post('/verify-otp', verifyOTP);
 
 // // ✅ Verify phone with OTP
 // router.post('/verify-phone', protect, verifyPhone)
+// Send OTP for phone verification
+router.post('/send-phone-otp', sendPhoneOtp);
+
+// Verify phone with OTP
+router.post('/verify-phone', verifyPhone);
+
+//get employer
+router.get("/employerdetails/:id", getEmployerDetails)
 
 //login
 router.post('/login', login)
