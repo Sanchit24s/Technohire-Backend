@@ -4,8 +4,13 @@ const Employer = require("../models/Employer.js");
 // Create Employer Profile
 exports.createEmployerProfile = async (req, res) => {
     try {
-        const { foundedYear, sector, numberOfEmployees, location, socialLinks } =
+        const { foundedYear, sector, numberOfEmployees, location, socialLinks, Description } =
             req.body;
+
+        // Ensure files are uploaded
+        if (!req.files || !req.files['coverImage'] || !req.files['logo']) {
+            return res.status(400).json({ msg: 'Please upload both coverImage and logo.' });
+        }
 
         const employerProfile = await EmployerProfile.create({
             employer: req.user._id,
@@ -14,14 +19,14 @@ exports.createEmployerProfile = async (req, res) => {
             numberOfEmployees,
             location,
             socialLinks,
-            coverImage: req.files?.coverImage
-                ? req.files["coverImage"][0].path
-                : null,
-            logo: req.files?.logo ? req.files["logo"][0].path : null,
+            Description,
+            coverImage: req.files['coverImage'][0].path, // Save file path
+            logo: req.files['logo'][0].path, // Save file path
         });
 
         res.status(201).json({ employerProfile });
     } catch (error) {
+        console.error('Error creating employer profile:', error);
         res.status(500).json({ msg: error.message });
     }
 };
@@ -29,7 +34,7 @@ exports.createEmployerProfile = async (req, res) => {
 // Update Employer Profile
 exports.updateEmployerProfile = async (req, res) => {
     try {
-        const { foundedYear, sector, numberOfEmployees, location, socialLinks } =
+        const { foundedYear, sector, numberOfEmployees, location, socialLinks, Description } =
             req.body;
 
         const updatedData = {
@@ -38,14 +43,17 @@ exports.updateEmployerProfile = async (req, res) => {
             numberOfEmployees,
             location,
             socialLinks,
+            Description,
         };
 
+        // Update coverImage if provided
         if (req.files?.coverImage) {
-            updatedData.coverImage = req.files["coverImage"][0].path;
+            updatedData.coverImage = req.files['coverImage'][0].path;
         }
 
+        // Update logo if provided
         if (req.files?.logo) {
-            updatedData.logo = req.files["logo"][0].path;
+            updatedData.logo = req.files['logo'][0].path;
         }
 
         const employerProfile = await EmployerProfile.findByIdAndUpdate(
@@ -56,6 +64,7 @@ exports.updateEmployerProfile = async (req, res) => {
 
         res.status(200).json({ employerProfile });
     } catch (error) {
+        console.error('Error updating employer profile:', error);
         res.status(500).json({ msg: error.message });
     }
 };
