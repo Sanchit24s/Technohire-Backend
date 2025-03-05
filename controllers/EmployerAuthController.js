@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
         // }
 
         // Send OTP to phone
-        const otpPhoneResult = await sendOtp(employer);
+        const otpPhoneResult = await sendOtp(phone);
         if (!otpPhoneResult.success) {
             return res.status(500).json({ msg: otpPhoneResult.message });
         }
