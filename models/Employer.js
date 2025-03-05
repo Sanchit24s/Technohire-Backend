@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const EmployerSchema = new mongoose.Schema({
-    companyName: { type: String, required: true },
+    fullName: { type: String, required: true },  // Ensure `fullName` is required
+    userName: { type: String, required: true },
     email: { 
         type: String, 
         required: true, 
@@ -13,18 +14,14 @@ const EmployerSchema = new mongoose.Schema({
         unique: true,
         match: [/^\+?[1-9]\d{1,14}$/, "Invalid phone number format."]
     },
-    password: { type: String },
-    googleId: { type: String },
-    linkedinId: { type: String },
+    password: { type: String, required: true },  // Ensure password is required
     isVerified: { type: Boolean, default: false },
     verificationToken: { type: String },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
-    otp: {type: String},
-    otpExpires: {type: Date},
-    phoneVerified: {type: Boolean, default: false},
-    phoneOtp: {type: String},
-    phoneOtpExpires: {type: Date}
+    otp: { type: String },
+    otpExpires: { type: Date },
+    phoneVerified: { type: Boolean, default: false }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Employer', EmployerSchema);

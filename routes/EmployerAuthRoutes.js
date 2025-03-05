@@ -1,49 +1,43 @@
 const express = require('express');
-const passport = require('passport');
-const {register, verifyEmail, forgotPassword,resetPassword, login, verifyOTP,  getEmployerDetails, verifyPhone, sendPhoneOtp} =  require('../controllers/EmployerAuthController.js');
+const { 
+    register, 
+    verifyEmail, 
+    forgotPassword, 
+    resetPassword, 
+    login, 
+    getEmployerDetails, 
+    verifyPhone, 
+    sendPhoneOtp,
+    verifyEmailOTP,
+    
 
+} = require('../controllers/EmployerAuthController.js');
+const {protect} = require('../middlewares/EmployerAuthMiddleware.js')
 
 const router = express.Router();
 
-//Register
+// Register
 router.post('/register', register);
 
-//Verify otp
-router.post('/verify-otp', verifyOTP);
+// Verify email
+router.post('/verify-email', protect, verifyEmailOTP);
 
-// // // ✅ Send OTP for phone verification
-// router.post('/send-phone-otp', protect, sendPhoneOtp)
-
-// // ✅ Verify phone with OTP
-// router.post('/verify-phone', protect, verifyPhone)
 // Send OTP for phone verification
-router.post('/send-phone-otp', sendPhoneOtp);
+router.post('/send-phone-otp', protect,sendPhoneOtp);
 
 // Verify phone with OTP
-router.post('/verify-phone', verifyPhone);
+router.post('/verify-phone', protect,verifyPhone);
 
-//get employer
-router.get("/employerdetails/:id", getEmployerDetails)
+// Forgot password
+router.post('/forgot-password', protect,forgotPassword);
 
-//login
-router.post('/login', login)
+// Reset password
+router.post('/reset-password', protect,resetPassword);
 
-//email veriification
-router.get('/verify-email/:token', verifyEmail)
+// Get employer details
+router.get('/employerdetails/:id', getEmployerDetails);
 
-//Forget password
-router.post('/forgot-password', forgotPassword);
-
-//Reset password
-router.post('/reset-password/:token', resetPassword);
-
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-router.get('/google/callback', passport.authenticate('google'), (req, res) => res.redirect('/dashboard'));
-
-router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
-router.get('/facebook/callback', passport.authenticate('facebook'), (req, res) => res.redirect('/dashboard'));
-
-router.get('/linkedin', passport.authenticate('linkedin'));
-router.get('/linkedin/callback', passport.authenticate('linkedin'), (req, res) => res.redirect('/dashboard'));
+// Login
+router.post('/login', login);
 
 module.exports = router;
