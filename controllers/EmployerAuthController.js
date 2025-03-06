@@ -195,16 +195,29 @@ exports.forgotPassword = async (req, res) => {
 
     try {
         const employer = await Employer.findOne({ email });
-        if (!employer) return res.status(400).json({ msg: 'No user found with this email' });
+        if (!employer) {
+            return res.status(400).json({ msg: "No user found with this email." });
+        }
 
-        const resetToken = crypto.randomBytes(32).toString('hex');
+        // Generate reset token
+        const resetToken = crypto.randomBytes(32).toString("hex");
         employer.resetPasswordToken = resetToken;
-        employer.resetPasswordExpires = Date.now() + 3600000;
+        employer.resetPasswordExpires = Date.now() + 3600000; // Token valid for 1 hour
         await employer.save();
 
-        sendPasswordResetEmail(employer, res);
+        console.log("Reset Token:", resetToken); // Debug log
+        console.log("Reset Token Expires:", new Date(employer.resetPasswordExpires)); // Debug log
+
+        // Send reset password email
+        const emailResult = await sendPasswordResetEmail(email, resetToken);
+        if (!emailResult.success) {
+            return res.status(500).json({ msg: emailResult.message });
+        }
+
+        res.status(200).json({ msg: "Password reset email sent. Check your inbox." });
     } catch (error) {
-        res.status(500).json({ msg: error.message });
+        console.error("Error in forgotPassword:", error);
+        res.status(500).json({ msg: "Internal Server Error" });
     }
 };
 
@@ -214,18 +227,27 @@ exports.resetPassword = async (req, res) => {
     const { newPassword } = req.body;
 
     try {
-        const employer = await Employer.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
-        if (!employer) return res.status(400).json({ msg: 'Invalid or expired token' });
+        const employer = await Employer.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }, // Check if token is not expired
+        });
 
+        if (!employer) {
+            console.log("Invalid or expired token:", token); // Debug log
+            return res.status(400).json({ msg: "Invalid or expired token." });
+        }
+
+        // Hash the new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
         employer.password = hashedPassword;
         employer.resetPasswordToken = undefined;
         employer.resetPasswordExpires = undefined;
         await employer.save();
 
-        res.status(200).json({ msg: 'Password reset successful' });
+        res.status(200).json({ msg: "Password reset successful." });
     } catch (error) {
-        res.status(500).json({ msg: error.message });
+        console.error("Error in resetPassword:", error);
+        res.status(500).json({ msg: "Internal Server Error" });
     }
 };
 

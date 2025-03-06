@@ -40,39 +40,26 @@ const sendVerificationEmail = async (user) => {
 };
 
 // Send password reset email
-const sendPasswordResetEmail = async (user, res) => {
+const sendPasswordResetEmail = async (email, resetToken) => {
     try {
-        const resetToken = crypto.randomBytes(32).toString("hex");
-        user.resetPasswordToken = resetToken;
-        user.resetPasswordExpires = Date.now() + 3600000; // Token valid for 1 hour
-        await user.save();
-
         const resetUrl = `${process.env.BASE_URL}/auth/reset-password/${resetToken}`;
 
         const mailOptions = {
             from: `"Your Company" <${process.env.EMAIL_USER}>`,
-            to: user.email,
+            to: email,
             subject: "Password Reset Request",
             html: `
-                <p>Hello ${user.fullName},</p>
-                <p>Click the link below to reset your password:</p>
+                <p>You requested a password reset. Click the link below to reset your password:</p>
                 <a href="${resetUrl}">${resetUrl}</a>
                 <p>This link will expire in 1 hour.</p>
             `,
         };
 
         await transport.sendMail(mailOptions);
-        res
-            .status(200)
-            .json({ msg: "Password reset email sent. Check your inbox." });
+        return { success: true, message: "Password reset email sent. Check your inbox." };
     } catch (error) {
         console.error("Error Sending Password Reset Email:", error);
-        res
-            .status(500)
-            .json({
-                msg: "Failed to send password reset email.",
-                error: error.message,
-            });
+        return { success: false, message: "Failed to send password reset email.", error: error.message };
     }
 };
 const sendOTPEmail = async (user) => {
