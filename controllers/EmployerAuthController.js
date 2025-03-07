@@ -39,18 +39,6 @@ exports.register = async (req, res) => {
 
         await employer.save();
 
-        // Send verification email
-        const verificationResult = await sendVerificationEmail(employer);
-        if (!verificationResult.success) {
-            return res.status(500).json({ msg: verificationResult.message });
-        }
-
-        // Send OTP email
-        const otpResult = await sendOTPEmail(employer);
-        if (!otpResult.success) {
-            return res.status(500).json({ msg: otpResult.message });
-        }
-
         // Generate JWT Token
         const token = jwt.sign(
             { id: employer._id, email: employer.email },
@@ -59,7 +47,7 @@ exports.register = async (req, res) => {
         );
 
         res.status(201).json({
-            msg: "Registration successful! Check your email for verification and OTP.",
+            msg: "Registration successful! Please verify your account.",
             userId: employer._id,
             fullName: employer.fullName,
             userName: employer.userName,
@@ -99,6 +87,29 @@ exports.login = async (req, res) => {
       EMAIL VERIFICATION
 =========================== */
 
+// Send Email Verification OTP
+exports.sendEmailVerificationOTP = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const employer = await Employer.findOne({ email });
+        if (!employer) {
+            return res.status(400).json({ msg: "No user found with this email." });
+        }
+
+        // Send verification email
+        const verificationResult = await sendVerificationEmail(employer);
+        if (!verificationResult.success) {
+            return res.status(500).json({ msg: verificationResult.message });
+        }
+
+        res.status(200).json({ msg: "Verification email sent. Check your inbox." });
+    } catch (error) {
+        console.error("Error in sendEmailVerificationOTP:", error);
+        res.status(500).json({ msg: "Internal Server Error" });
+    }
+};
+
 // Verify Email OTP
 exports.verifyEmailOTP = async (req, res) => {
     const { email, otp } = req.body;
@@ -113,24 +124,6 @@ exports.verifyEmailOTP = async (req, res) => {
         await employer.save();
 
         res.status(200).json({ msg: 'Email verified successfully.' });
-    } catch (error) {
-        res.status(500).json({ msg: error.message });
-    }
-};
-
-// Verify Email Token
-exports.verifyEmail = async (req, res) => {
-    const { token } = req.params;
-
-    try {
-        const employer = await Employer.findOne({ verificationToken: token });
-        if (!employer) return res.status(400).json({ msg: 'Invalid or expired token.' });
-
-        employer.isVerified = true;
-        employer.verificationToken = undefined;
-        await employer.save();
-
-        res.status(200).json({ msg: 'Email verified.' });
     } catch (error) {
         res.status(500).json({ msg: error.message });
     }
@@ -205,9 +198,6 @@ exports.forgotPassword = async (req, res) => {
         employer.resetPasswordExpires = Date.now() + 3600000; // Token valid for 1 hour
         await employer.save();
 
-        console.log("Reset Token:", resetToken); // Debug log
-        console.log("Reset Token Expires:", new Date(employer.resetPasswordExpires)); // Debug log
-
         // Send reset password email
         const emailResult = await sendPasswordResetEmail(email, resetToken);
         if (!emailResult.success) {
@@ -233,7 +223,6 @@ exports.resetPassword = async (req, res) => {
         });
 
         if (!employer) {
-            console.log("Invalid or expired token:", token); // Debug log
             return res.status(400).json({ msg: "Invalid or expired token." });
         }
 
@@ -258,15 +247,12 @@ exports.resetPassword = async (req, res) => {
 // Get Employer Details
 exports.getEmployerDetails = async (req, res) => {
     try {
-        console.log("Fetching Employer Profile with ID:", req.params.id);
         const employerdetails = await Employer.findById(req.params.id);
 
         if (!employerdetails) {
-            console.log("Employer Profile not found");
             return res.status(404).json({ msg: "Employer profile not found" });
         }
 
-        console.log("Employer Profile found:", employerdetails);
         res.status(200).json({ employerdetails });
     } catch (error) {
         console.error("Error fetching Employer Profile:", error);
