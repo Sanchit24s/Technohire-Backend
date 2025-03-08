@@ -36,7 +36,7 @@ router.post('/verify-phone', protect, verifyPhone);
 router.post('/forgot-password', forgotPassword);
 
 // Reset Password
-router.post('/reset-password/:token', resetPassword);
+router.post('/reset-password/:token', resetPassword); // Use POST for resetting password
 
 // Get Employer Details
 router.get('/employerdetails/:id', getEmployerDetails);
