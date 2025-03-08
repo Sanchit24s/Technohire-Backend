@@ -8,6 +8,7 @@ const EmployerProfileSchema = new mongoose.Schema({
     sector: { type: String, required: true },
     location: { type: String, required: true },
     numberOfEmployees: { type: Number, required: true },
+    Description: {type: String, require: true},
     socialLinks: {
         facebook: { type: String },
         twitter: { type: String },

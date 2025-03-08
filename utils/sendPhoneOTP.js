@@ -9,7 +9,6 @@ const client = twilio(accountSid, authToken);
 
 const sendOtp = async (phoneNumber) => {
     try {
-        console.log('Sending OTP to:', phoneNumber); // Debug log
         const verification = await client.verify.v2
             .services(serviceSid)
             .verifications.create({
@@ -17,7 +16,6 @@ const sendOtp = async (phoneNumber) => {
                 channel: 'sms',
             });
 
-        console.log('OTP sent via SMS:', verification.sid);
         return { success: true, message: 'OTP sent successfully.', verificationSid: verification.sid };
     } catch (error) {
         console.error('Error sending OTP via SMS:', error);
@@ -35,7 +33,6 @@ const verifyOTP = async (phoneNumber, code) => {
                 code: code,
             });
 
-        console.log('Verification check:', verificationCheck.status);
         return { success: true, status: verificationCheck.status };
     } catch (error) {
         console.error('Error verifying OTP:', error);
