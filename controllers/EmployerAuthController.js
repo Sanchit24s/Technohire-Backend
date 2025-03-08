@@ -183,6 +183,8 @@ exports.verifyPhone = async (req, res) => {
 =========================== */
 
 // Forgot Password
+// Forgot Password
+// Forgot Password
 exports.forgotPassword = async (req, res) => {
     const { email } = req.body;
 
@@ -199,7 +201,8 @@ exports.forgotPassword = async (req, res) => {
         await employer.save();
 
         // Send reset password email
-        const emailResult = await sendPasswordResetEmail(email, resetToken);
+        const resetUrl = `${process.env.BASE_URL}/employer/auth/reset-password/${resetToken}`; // Correct reset URL
+        const emailResult = await sendPasswordResetEmail(email, resetUrl);
         if (!emailResult.success) {
             return res.status(500).json({ msg: emailResult.message });
         }
@@ -210,7 +213,8 @@ exports.forgotPassword = async (req, res) => {
         res.status(500).json({ msg: "Internal Server Error" });
     }
 };
-
+// Reset Password
+// Reset Password
 // Reset Password
 exports.resetPassword = async (req, res) => {
     const { token } = req.params;
@@ -239,7 +243,6 @@ exports.resetPassword = async (req, res) => {
         res.status(500).json({ msg: "Internal Server Error" });
     }
 };
-
 /* ===========================
         EMPLOYER DETAILS
 =========================== */

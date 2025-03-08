@@ -39,10 +39,10 @@ const sendVerificationEmail = async (user) => {
 };
 
 // Send Password Reset Email
-const sendPasswordResetEmail = async (email, resetToken) => {
+// Send Password Reset Email
+// Send Password Reset Email
+const sendPasswordResetEmail = async (email, resetUrl) => {
     try {
-        const resetUrl = `${process.env.BASE_URL}/auth/reset-password/${resetToken}`;
-
         const mailOptions = {
             from: `"Your Company" <${process.env.EMAIL_USER}>`,
             to: email,
