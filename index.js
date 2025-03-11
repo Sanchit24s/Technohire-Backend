@@ -34,6 +34,7 @@ connectDB();
 const allowedOrigins = [
   "http://localhost:3000",
   "https://technohire001.netlify.app",
+  "https://job-portal-employer-react-js.vercel.app",
 ];
 
 app.use(
@@ -55,8 +56,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Technohire!")
-})
+  res.send("Welcome to Technohire!");
+});
 
 // auth routes
 app.use("/auth", authRoutes);
