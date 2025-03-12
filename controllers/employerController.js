@@ -4,7 +4,7 @@ const Employer = require("../models/Employer.js");
 // Create Employer Profile
 exports.createEmployerProfile = async (req, res) => {
     try {
-        const { foundedYear, sector, numberOfEmployees, location, socialLinks, Description } =
+        const { companyName ,foundedYear, sector, numberOfEmployees, location, socialLinks, Description } =
             req.body;
 
         // Ensure files are uploaded
@@ -14,6 +14,7 @@ exports.createEmployerProfile = async (req, res) => {
 
         const employerProfile = await EmployerProfile.create({
             employer: req.user._id,
+            companyName,
             foundedYear,
             sector,
             numberOfEmployees,
@@ -34,10 +35,11 @@ exports.createEmployerProfile = async (req, res) => {
 // Update Employer Profile
 exports.updateEmployerProfile = async (req, res) => {
     try {
-        const { foundedYear, sector, numberOfEmployees, location, socialLinks, Description } =
+        const {companyName, foundedYear, sector, numberOfEmployees, location, socialLinks, Description } =
             req.body;
 
         const updatedData = {
+            companyName,
             foundedYear,
             sector,
             numberOfEmployees,
