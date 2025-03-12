@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const EmployerProfileSchema = new mongoose.Schema({
     employer: { type: mongoose.Schema.Types.ObjectId, ref: 'Employer', required: true },
+    companyName: { type: String,required: true },
     coverImage: { type: String }, // Path to uploaded image
     logo: { type: String }, // Path to uploaded logo
     foundedYear: { type: Number, required: true },

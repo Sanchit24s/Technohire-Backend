@@ -9,4 +9,5 @@ const CandidateProfileSchema = new mongoose.Schema({
     candidateLevel: { type: String }
 }, { timestamps: true });
 
+
 module.exports = mongoose.models.CandidateProfile || mongoose.model('CandidateProfile', CandidateProfileSchema);
