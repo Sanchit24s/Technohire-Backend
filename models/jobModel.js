@@ -2,6 +2,17 @@ const { Schema, model } = require("mongoose");
 
 const jobSchema = new Schema(
     {
+        applicants:[
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Candidate",
+            },
+        ],
+        company: {
+            type: Schema.Types.ObjectId,
+            ref: "CompanyInfo",
+            required: true,
+        },
         employerId: {
             type: Schema.Types.ObjectId,
             ref: "Employer",

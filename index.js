@@ -139,9 +139,11 @@ app.use(
   require("./routes/settings/employerAccountSettingRoutes.js")
 );
 
-//
+//Employeer's Dashboard
+app.use("/api/employers-dashboard", require("./routes/employersDashboardRoutes.js"));
 
-//
+//Employer's Company details 2
+app.use("/api/employers-company-details", require("./routes/employersCompanyDetailsRoutes.js"))
 
 const port = process.env.PORT || 3000;
 
