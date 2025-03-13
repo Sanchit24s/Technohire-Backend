@@ -5,7 +5,6 @@ const EmployerSchema = new mongoose.Schema(
         role: { type: String },
         profilePic: { type: String },
         profileCompletion: { type: Number, default: 0 },
-        savedCandidates: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Candidate' }],
         fullName: { type: String, required: true }, // Ensure `fullName` is required
         userName: { type: String, required: true },
         email: {
@@ -27,7 +26,10 @@ const EmployerSchema = new mongoose.Schema(
         otp: { type: String },
         otpExpires: { type: Date },
         phoneVerified: { type: Boolean, default: false },
-        savedCandidates: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Candidate' }],
+        savedCandidates: {
+            type: [mongoose.Schema.Types.ObjectId],
+            default: [],
+        },
     },
     { timestamps: true }
 );

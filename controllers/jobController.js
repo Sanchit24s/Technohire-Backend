@@ -142,7 +142,8 @@ const getAllJobs = async (req, res) => {
 // get open job count
 const getJobCount = async (req, res) => {
     try {
-        const jobs = await JobModel.find({ status: "Active" });
+        const employerId = req.user._id;
+        const jobs = await JobModel.find({ employerId, status: "Active" });
 
         res.status(200).json({ success: true, openJobsCount: jobs.length });
     } catch (error) {

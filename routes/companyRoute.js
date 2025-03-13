@@ -39,6 +39,7 @@ router.put(
 );
 
 router.get("/", getAllCompanies);
+router.get("/companiesCount", getAllCompaniesCount);
 router.get("/:id", getCompany);
 router.delete("/:id", deleteCompany);
 
@@ -46,6 +47,5 @@ router.get("/companyInfo/:id", getCompany);
 
 router.delete("/companyInfo/:id", deleteCompany);
 
-router.get("/companiesCount", getAllCompaniesCount);
 
 module.exports = router;

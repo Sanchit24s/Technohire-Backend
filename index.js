@@ -34,6 +34,7 @@ connectDB();
 const allowedOrigins = [
   "http://localhost:3000",
   "https://technohire001.netlify.app",
+  "https://job-portal-employer-react-js.vercel.app",
 ];
 
 app.use(
@@ -54,6 +55,10 @@ app.use(session({ secret: "secret", resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.get("/", (req, res) => {
+  res.send("Welcome to Technohire!");
+});
+
 // auth routes
 app.use("/auth", authRoutes);
 app.use("/profile", profileRoute);
@@ -72,10 +77,6 @@ app.use("/application", applicationRoute);
 app.use("/interview", interviewRoute);
 
 // app.use("/payment", paymentRoute);
-
-// app.get("/", (req, res) => {
-//   res.json({ message: "Hello" });
-// });
 
 //settings
 app.use("/settings/user", require("./routes/settings/userSettingsRoutes.js"));
