@@ -74,7 +74,7 @@ exports.login = async (req, res) => {
         const token = jwt.sign(
             { id: employer._id, email: employer.email },
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '1y' }
         );
 
         res.status(200).json({ userId: employer._id, token });
