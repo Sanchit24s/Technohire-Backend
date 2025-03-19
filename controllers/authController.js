@@ -11,22 +11,54 @@ require("dotenv").config();
 exports.register = async (req, res) => {
     const { fullName, userName, email, password } = req.body;
 
+    console.log("Register request received:", { fullName, userName, email }); // Debugging
+
     try {
+        // Check if the user already exists
         let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ msg: "The email already exists" });
+        if (user) {
+            console.log("User already exists:", email); // Debugging
+            return res.status(400).json({ msg: "The email already exists" });
+        }
 
+        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
+        console.log("Password hashed successfully"); // Debugging
+
+        // Create a new user
         user = new User({ fullName, userName, email, password: hashedPassword });
-
         await user.save();
+        console.log("User saved successfully:", user); // Debugging
 
-        // Send verification email
-        sendVerificationEmail(user, res);
+        // Generate a JWT token
+        const token = jwt.sign(
+            { id: user._id, email: user.email }, // Payload
+            process.env.JWT_SECRET, // Secret key
+            { expiresIn: "1h" } // Token expiration
+        );
+
+        console.log("Token generated successfully"); // Debugging
+
+        // Send verification email (optional)
+        await sendVerificationEmail(user, res);
+
+        // Respond with success message and token
+        res.status(201).json({
+            success: true,
+            message: "Registration successful!",
+            token: token, // Include the token in the response
+            user: {
+                id: user._id,
+                fullName: user.fullName,
+                userName: user.userName,
+                email: user.email,
+            },
+        });
     } catch (error) {
-        res.status(500).json({ msg: error.message });
+        console.error("Error in register function:", error); // Debugging
+        res.status(500).json({ success: false, msg: error.message });
     }
 };
-
 // Verify email
 exports.verifyEmail = async (req, res) => {
     const { token } = req.params;
