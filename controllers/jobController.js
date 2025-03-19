@@ -16,17 +16,21 @@ const createJob = async (req, res) => {
             jobDescription,
             responsibilities,
             expireDate,
-            employerId,
+            company, // Required field: company ID
         } = req.body;
 
-        // validate required fields
-        if (!jobTitle || !jobDescription || !expireDate) {
+        // Get the employer ID from the authenticated user (attached by the protect middleware)
+        const employerId = req.user._id;
+
+        // Validate required fields
+        if (!jobTitle || !jobDescription || !expireDate || !company) {
             return res.status(400).json({
                 success: false,
-                message: "Job title, expire date and description are required.",
+                message: "Job title, description, expire date, and company are required.",
             });
         }
 
+        // Create a new job
         const newJob = new JobModel({
             jobTitle,
             tags: tags || [],
@@ -40,24 +44,28 @@ const createJob = async (req, res) => {
             jobDescription,
             responsibilities: responsibilities || [],
             expireDate,
-            employerId,
+            company, // Required field: company ID
+            employerId, // Attach the employer ID from the authenticated user
         });
 
+        // Save the job to the database
         await newJob.save();
 
         return res.status(201).json({
             success: true,
-            message: "Your Job is successfully posted!",
+            message: "Your job has been successfully posted!",
             job: newJob,
         });
     } catch (error) {
-        console.log(error);
-        return res
-            .status(500)
-            .json({ success: false, message: "Internal server error" });
+        console.error("Error creating job:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
     }
 };
 
+module.exports = createJob;
 // update job
 const updateJob = async (req, res) => {
     try {
