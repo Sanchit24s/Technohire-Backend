@@ -35,6 +35,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://technohire001.netlify.app",
   "https://job-portal-employer-react-js.vercel.app",
+  "https://job-portal-employer-react-js.vercel.app/home",
 ];
 
 app.use(
@@ -143,7 +144,7 @@ app.use(
 app.use("/api/employers-dashboard", require("./routes/employersDashboardRoutes.js"));
 
 //Employer's Company details 2
-app.use("/api/employers-company-details", require("./routes/employersCompanyDetailsRoutes.js"))
+app.use("/api/employers-company-details", require("./routes/employersCompanyDetailsRoutes.js"));
 
 const port = process.env.PORT || 3000;
 
