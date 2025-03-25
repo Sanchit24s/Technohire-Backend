@@ -9,6 +9,7 @@ const {
     getJobCount,
     getNewJobs,
     getNewJobsCount,
+    getEmployerJobs,
 } = require("../controllers/jobController");
 const { protect } = require("../middlewares/EmployerAuthMiddleware");
 
@@ -16,6 +17,7 @@ const router = express.Router();
 
 router.post("/createJob", protect, createJob);
 router.get("/getAllJobs", getAllJobs);
+router.get("/getEmployerJobs", protect, getEmployerJobs);
 router.get("/getOpenJobs", protect, getJobCount);
 router.get("/getJob/:id", getJobById);
 router.get("/latestJobs", getLatestJobs);
