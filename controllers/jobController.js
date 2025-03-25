@@ -147,6 +147,23 @@ const getAllJobs = async (req, res) => {
     }
 };
 
+// get employer jobs
+const getEmployerJobs = async (req, res) => {
+    try {
+        const jobs = await JobModel.find({ employerId: req.user._id });
+        if (jobs.length < 1) {
+            return res.status(200).json({ success: false, message: "No job posted by employer" });
+        }
+
+        res.status(200).json({ success: true, jobs });
+    } catch (error) {
+        console.log(error);
+        return res
+            .status(500)
+            .json({ success: false, message: "Internal server error" });
+    }
+};
+
 // get open job count
 const getJobCount = async (req, res) => {
     try {
@@ -289,4 +306,5 @@ module.exports = {
     getJobCount,
     getNewJobs,
     getNewJobsCount,
+    getEmployerJobs,
 };
