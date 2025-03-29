@@ -36,6 +36,7 @@ const allowedOrigins = [
   "https://technohire001.netlify.app",
   "https://job-portal-employer-react-js.vercel.app",
   "https://job-portal-employer-react-js.vercel.app/home",
+  "https://job-portal-employer-react-ktoyaskkg.vercel.app"
 ];
 
 app.use(
