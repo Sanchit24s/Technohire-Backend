@@ -1,19 +1,23 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs'); // Import the fs module
+const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("../config/cloudinary");
 
-// Configure Multer Storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadsDir = path.join(__dirname, '../uploads'); // Ensure this path is correct
-        if (!fs.existsSync(uploadsDir)) {
-            fs.mkdirSync(uploadsDir, { recursive: true }); // Create the directory if it doesn't exist
+// Configure Cloudinary Storage
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: async (req, file) => {
+        const allowedFormats = ["png", "jpg", "jpeg", "webp"];
+        const fileExtension = file.mimetype.split("/")[1];
+
+        if (!allowedFormats.includes(fileExtension)) {
+            throw new Error("Invalid file type. Only images are allowed.");
         }
-        cb(null, uploadsDir); // Save files in the 'uploads' directory
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, uniqueSuffix + '-' + file.originalname); // Generate a unique filename
+
+        return {
+            folder: "Technohire/EmployerProfile",
+            format: fileExtension,
+            public_id: Date.now() + "-" + file.originalname,
+        };
     },
 });
 

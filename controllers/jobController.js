@@ -1,3 +1,4 @@
+const EmployerProfile = require("../models/EmployerProfile");
 const JobModel = require("../models/jobModel");
 
 // post a job
@@ -155,14 +156,33 @@ const getEmployerJobs = async (req, res) => {
             return res.status(200).json({ success: false, message: "No job posted by employer" });
         }
 
-        res.status(200).json({ success: true, jobs });
+        const employerProfile = await EmployerProfile.findOne({ employer: req.user._id });
+
+        if (!employerProfile) {
+            return res.status(404).json({ success: false, message: "Employer profile not found" });
+        }
+
+        // Extract logo
+        const logo = employerProfile.logo || "";
+
+        // Add logo field to each job
+        const updatedJobs = jobs.map((job) => {
+            return {
+                ...job.toObject(),
+                logo: logo
+            };
+        });
+
+        res.status(200).json({
+            success: true,
+            jobs: updatedJobs
+        });
     } catch (error) {
         console.log(error);
-        return res
-            .status(500)
-            .json({ success: false, message: "Internal server error" });
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
 
 // get open job count
 const getJobCount = async (req, res) => {
